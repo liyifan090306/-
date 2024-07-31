@@ -52,6 +52,26 @@ def page_2():
             with tab4:
                 st. image(img_change(img, 1,1,0))
                 st.write('### :red[这是一张012的rgb]')
+            ch = st.toggle('反色滤镜')
+            bw = st.toggle('黑白滤镜')
+            co = st.toggle('增强对比度')
+
+            message = ''
+            if ch:
+                message += '反色' + ','
+            if bw:
+                message += '黑白' + ','
+            if co:
+                message += '增强对比度'
+                st.write('你将会得到一张', message, '的图片')
+            if ch:
+                img = apply_inverse_color(img)  
+            if bw:
+                img = apply_black_white_filter(img) 
+            if co:
+                img = apply_contrast_enhancement(img)  
+
+            st.image(img)
         except FileNotFoundError as fnfe:  
             st.error(f"文件未找到错误: {fnfe}")
         except IOError as ioe:
@@ -77,9 +97,10 @@ def page_3():
         times_list[i] = times_list[i].split('#')
     times_dict = {}
     for i in times_list:
-        times_dict[int(i[0])] = int(i[1])
-
-                            
+        try:  # 新增：添加错误处理
+            times_dict[int(i[0])] = int(i[1])
+        except ValueError:
+            print(f"无法将 {i[0]} 或 {i[1]} 转换为整数") 
     word = st.text_input('请输入要查询的单词')
     if word in words_dict:
         st.write(words_dict[word])
@@ -92,7 +113,7 @@ def page_3():
             message = ''
             '''字典键值对遍历'''
             for k, v in times_dict.items():
-                message += str(k) + '#' + str(v) + 'n'
+                message += str(k) + '#' + str(v) + '\n'
             message = message[:-1]
             f.write(message)
         st.write('查询次数：', times_dict[n])
@@ -119,9 +140,17 @@ def page_3():
 
 def page_4():
     '''我的留言区'''
-    st.write('我的留言区')
     with open('leave_messages.txt', 'r', encoding='utf-8') as f:
         messages_list =f.read().split('\n')
+    number1 = st.slider('数据 1：', 1, 100, 50)
+    number2, number3 = st.slider('数据 2 和 3：', 1, 10, (4, 6))
+    st.write('数据 1：', number1)
+    st.write('数据 2-3：', number2, '-', number3)
+    st.write('----')
+    msg_lst = ['留言 1', '留言 2', '留言 3', '留言 4', '留言 5', '留言 6', '留言 7', '留言 8']
+    begin, end = st.slider('选择显示的留言信息：', 1, len(msg_lst), (1, len(msg_lst)))
+    for i in range(begin - 1, end):
+        st.write(msg_lst[i])
     for i in range(len(messages_list)):
         messages_list[i] = messages_list[i].split('#')
     st.text("主人留言")
